@@ -28,6 +28,9 @@
                color:var(--sub);font-weight:600;cursor:pointer}
   .tabs button.on{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
   .sec-title{font-size:12px;color:var(--sub);margin:4px 2px 8px}
+  .sort{display:flex;gap:6px;margin:2px 0 10px}
+  .sort button{flex:1;border:1px solid var(--line);background:var(--card);color:var(--sub);padding:8px 0;font-size:13px;border-radius:8px;font-weight:600;cursor:pointer}
+  .sort button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
   .list{background:var(--card);border-radius:12px;border:1px solid var(--line);overflow:hidden}
   .row{display:grid;grid-template-columns:28px 64px 1fr 52px 50px;align-items:center;gap:8px;
        padding:10px 12px;border-bottom:1px solid var(--line)}
@@ -83,6 +86,11 @@
     <button id="tSnap" class="on" onclick="setTab('snap')">2시간 순위</button>
     <button id="tLive" onclick="setTab('live')">실시간 (10분)</button>
   </div>
+  <div class="sort">
+    <button id="sLow" class="on" onclick="setSort('socAsc')">잔량 낮은순</button>
+    <button id="sHigh" onclick="setSort('socDesc')">잔량 높은순</button>
+    <button id="sName" onclick="setSort('name')">장비명순</button>
+  </div>
   <div class="sec-title" id="secTitle"></div>
   <div class="list" id="list"></div>
   <footer>잔량 낮은 순 · 5분마다 자동 새로고침</footer>
@@ -92,7 +100,7 @@
 <script>
   // ===== 간단 암호 (약한 잠금) — 바꾸려면 아래 PASS 값을 수정 =====
   var PASS = "hjnc1234";
-  var DATA = null, TAB = 'snap';
+  var DATA = null, TAB = 'snap', SORT = 'socAsc';
 
   var saved = null;
   try { saved = sessionStorage.getItem('yt_ok'); } catch(e){}
@@ -118,6 +126,17 @@
   function esc(x){ return String(x==null?'':x).replace(/[&<>"]/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m];}); }
   function minsAgo(t){ if(!t) return null; var d=new Date(String(t).replace(' ','T')+(String(t).length<=16?':00':'')+'+09:00'); return (Date.now()-d.getTime())/60000; }
   function setTab(t){ TAB=t; document.getElementById('tSnap').className=t==='snap'?'on':''; document.getElementById('tLive').className=t==='live'?'on':''; render(); }
+  function setSort(s){ SORT=s; document.getElementById('sLow').className=s==='socAsc'?'on':''; document.getElementById('sHigh').className=s==='socDesc'?'on':''; document.getElementById('sName').className=s==='name'?'on':''; render(); }
+  function applySort(arr){
+    var a=arr.slice();
+    // 배터리 순위(잔량 낮은 순)를 먼저 매겨 왼쪽 번호로 사용
+    var byLow=a.slice().sort(function(x,y){ return (x.soc===null?999:x.soc)-(y.soc===null?999:y.soc); });
+    byLow.forEach(function(v,i){ v.battRank=i+1; });
+    if(SORT==='name') a.sort(function(x,y){ return String(x.name).localeCompare(String(y.name)); });
+    else if(SORT==='socDesc') a.sort(function(x,y){ return (y.soc===null?-1:y.soc)-(x.soc===null?-1:x.soc); });
+    else a=byLow;
+    return a;
+  }
 
   function load(){
     fetch('data.json?t='+Date.now()).then(function(r){return r.json();}).then(function(d){ DATA=d; render(); })
@@ -141,9 +160,10 @@
     } else if(TAB==='snap'){
       items=[]; document.getElementById('secTitle').textContent='첫 2시간 스냅샷을 기다리는 중입니다';
     } else {
-      items=(d.latest||[]).map(function(v,i){v.rank=i+1;return v;});
+      items=(d.latest||[]).slice();
       document.getElementById('secTitle').textContent=(d.lastCollectedText||'-')+' 수집 기준';
     }
+    items=applySort(items);
 
     var socs=items.map(function(v){return v.soc;}).filter(function(s){return s!==null;});
     var low=socs.filter(function(s){return s<c.danger;}).length;
@@ -166,7 +186,7 @@
       } else dl='<span class="dl"></span>';
       var w=v.soc===null?0:Math.max(2,Math.min(100,v.soc));
       return '<div class="row '+cls(v.soc,c)+((lag!==null&&lag>30)?' lag':'')+'">'+
-        '<div class="rk">'+esc(v.rank)+'</div>'+
+        '<div class="rk">'+esc(v.battRank||v.rank)+'</div>'+
         '<div class="nm">'+esc(v.name)+'<small>'+esc(lagTxt)+'</small></div>'+
         '<div class="bar"><i style="width:'+w+'%;background:'+color(v.soc,c)+'"></i></div>'+
         '<div class="pct">'+(v.soc===null?'-':Math.round(v.soc)+'%')+'</div>'+dl+
