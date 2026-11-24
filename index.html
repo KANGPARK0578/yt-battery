@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>전기 YT 배터리 현황</title>
+<style>
+  :root{
+    --bg:#f4f6f9; --card:#fff; --ink:#16202c; --sub:#5f6b7a; --line:#e4e8ee;
+    --ok:#1f9d55; --warn:#e08a00; --danger:#d63a3a; --muted:#9aa4b1; --brand:#0b57b7;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
+       background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
+  header{background:var(--brand);color:#fff;padding:14px 16px 12px}
+  header h1{margin:0;font-size:18px;font-weight:700}
+  header .meta{margin-top:4px;font-size:12px;opacity:.85}
+  .wrap{max-width:720px;margin:0 auto;padding:12px}
+  .stale{background:#fff3cd;color:#7a5200;border:1px solid #f1d48a;border-radius:10px;
+         padding:10px 12px;font-size:13px;margin-bottom:10px;display:none}
+  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
+  .card{background:var(--card);border-radius:12px;padding:10px 8px;text-align:center;border:1px solid var(--line)}
+  .card .v{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
+  .card .l{font-size:11px;color:var(--sub);margin-top:2px}
+  .card.alert .v{color:var(--danger)}
+  .tabs{display:flex;background:#e6eaf0;border-radius:10px;padding:3px;margin-bottom:10px}
+  .tabs button{flex:1;border:0;background:transparent;padding:9px 0;font-size:14px;border-radius:8px;
+               color:var(--sub);font-weight:600;cursor:pointer}
+  .tabs button.on{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+  .sec-title{font-size:12px;color:var(--sub);margin:4px 2px 8px}
+  .list{background:var(--card);border-radius:12px;border:1px solid var(--line);overflow:hidden}
+  .row{display:grid;grid-template-columns:28px 64px 1fr 52px 50px;align-items:center;gap:8px;
+       padding:10px 12px;border-bottom:1px solid var(--line)}
+  .row:last-child{border-bottom:0}
+  .rk{font-size:13px;color:var(--muted);text-align:center;font-variant-numeric:tabular-nums}
+  .nm{font-weight:700;font-size:15px}
+  .nm small{display:block;font-weight:400;font-size:10.5px;color:var(--muted);margin-top:1px}
+  .bar{height:10px;background:#edf0f4;border-radius:6px;overflow:hidden}
+  .bar i{display:block;height:100%;border-radius:6px}
+  .pct{font-weight:700;font-size:16px;text-align:right;font-variant-numeric:tabular-nums}
+  .dl{font-size:11.5px;text-align:right;font-variant-numeric:tabular-nums;color:var(--muted)}
+  .dl.down{color:var(--danger)} .dl.up{color:var(--ok)}
+  .danger .pct{color:var(--danger)} .danger{background:#fff6f6}
+  .warn .pct{color:var(--warn)}
+  .lag .nm small{color:var(--warn)}
+  .empty{padding:28px;text-align:center;color:var(--sub);font-size:14px}
+  footer{font-size:11px;color:var(--muted);text-align:center;padding:14px 0 24px}
+  #gate{position:fixed;inset:0;background:var(--brand);display:flex;align-items:center;justify-content:center;z-index:10}
+  #gate .box{background:#fff;border-radius:14px;padding:26px 22px;width:280px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.2)}
+  #gate h2{margin:0 0 4px;font-size:17px}
+  #gate p{margin:0 0 16px;font-size:12px;color:var(--sub)}
+  #gate input{width:100%;padding:11px;border:1px solid var(--line);border-radius:9px;font-size:15px;text-align:center}
+  #gate button{width:100%;margin-top:10px;padding:11px;border:0;border-radius:9px;background:var(--brand);color:#fff;font-size:15px;font-weight:700;cursor:pointer}
+  #gate .err{color:var(--danger);font-size:12px;height:16px;margin-top:8px}
+  @media (max-width:380px){ .row{grid-template-columns:22px 56px 1fr 46px 42px;gap:6px;padding:9px 10px} .card .v{font-size:17px} }
+</style>
+</head>
+<body>
+<div id="gate">
+  <div class="box">
+    <h2>전기 YT 배터리 현황</h2>
+    <p>암호를 입력하세요</p>
+    <input id="pw" type="password" autocomplete="off" inputmode="text">
+    <button id="go">확인</button>
+    <div class="err" id="gerr"></div>
+  </div>
+</div>
+
+<div id="app" style="display:none">
+<header>
+  <h1>전기 YT 배터리 현황</h1>
+  <div class="meta" id="meta">불러오는 중…</div>
+</header>
+<div class="wrap">
+  <div class="stale" id="stale"></div>
+  <div class="cards">
+    <div class="card"><div class="v" id="cCount">-</div><div class="l">대수</div></div>
+    <div class="card"><div class="v" id="cAvg">-</div><div class="l">평균 잔량</div></div>
+    <div class="card" id="cLowCard"><div class="v" id="cLow">-</div><div class="l" id="cLowL">충전 필요</div></div>
+    <div class="card"><div class="v" id="cMin">-</div><div class="l" id="cMinL">최저</div></div>
+  </div>
+  <div class="tabs">
+    <button id="tSnap" class="on" onclick="setTab('snap')">2시간 순위</button>
+    <button id="tLive" onclick="setTab('live')">실시간 (10분)</button>
+  </div>
+  <div class="sec-title" id="secTitle"></div>
+  <div class="list" id="list"></div>
+  <footer>잔량 낮은 순 · 5분마다 자동 새로고침</footer>
+</div>
+</div>
+
+<script>
+  // ===== 간단 암호 (약한 잠금) — 바꾸려면 아래 PASS 값을 수정 =====
+  var PASS = "hjnc1234";
+  var DATA = null, TAB = 'snap';
+
+  var saved = null;
+  try { saved = sessionStorage.getItem('yt_ok'); } catch(e){}
+  if (saved === PASS) openApp();
+
+  document.getElementById('go').onclick = tryPass;
+  document.getElementById('pw').addEventListener('keydown', function(e){ if(e.key==='Enter') tryPass(); });
+  function tryPass(){
+    var v = document.getElementById('pw').value;
+    if (v === PASS){ try{sessionStorage.setItem('yt_ok',v)}catch(e){} openApp(); }
+    else document.getElementById('gerr').textContent = '암호가 맞지 않습니다';
+  }
+  function openApp(){
+    document.getElementById('gate').style.display='none';
+    document.getElementById('app').style.display='block';
+    load();
+    setInterval(load, 5*60*1000);
+    setInterval(render, 60*1000);
+  }
+
+  function color(s,c){ if(s===null) return 'var(--muted)'; return s<c.danger?'var(--danger)':s<c.warn?'var(--warn)':'var(--ok)'; }
+  function cls(s,c){ if(s===null) return ''; return s<c.danger?'danger':s<c.warn?'warn':''; }
+  function esc(x){ return String(x==null?'':x).replace(/[&<>"]/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m];}); }
+  function minsAgo(t){ if(!t) return null; var d=new Date(String(t).replace(' ','T')+(String(t).length<=16?':00':'')+'+09:00'); return (Date.now()-d.getTime())/60000; }
+  function setTab(t){ TAB=t; document.getElementById('tSnap').className=t==='snap'?'on':''; document.getElementById('tLive').className=t==='live'?'on':''; render(); }
+
+  function load(){
+    fetch('data.json?t='+Date.now()).then(function(r){return r.json();}).then(function(d){ DATA=d; render(); })
+      .catch(function(){ document.getElementById('meta').textContent='데이터를 불러오지 못했습니다'; });
+  }
+
+  function render(){
+    if(!DATA) return;
+    var d=DATA, c=d.cfg||{warn:50,danger:30,staleMin:25,snapshotHours:2};
+    document.getElementById('meta').textContent = d.lastCollectedText ? ('마지막 수집 '+d.lastCollectedText) : '아직 수집된 데이터가 없습니다';
+    var ago = d.lastCollectedAt ? (Date.now()-new Date(d.lastCollectedAt).getTime())/60000 : null;
+    var st=document.getElementById('stale');
+    if(ago!==null && ago>c.staleMin){ st.style.display='block'; st.textContent='⚠ 마지막 수집이 '+Math.round(ago)+'분 전입니다. 수집 PC 상태를 확인하세요.'; }
+    else st.style.display='none';
+
+    var items, prevMap={};
+    if(TAB==='snap' && d.snapshot){
+      items=d.snapshot.items;
+      if(d.previous) d.previous.items.forEach(function(p){prevMap[p.name]=p.soc;});
+      document.getElementById('secTitle').textContent = d.snapshot.at+' 기준 순위'+(d.previous?' · 변화량은 '+d.previous.at.slice(11)+' 대비':'');
+    } else if(TAB==='snap'){
+      items=[]; document.getElementById('secTitle').textContent='첫 2시간 스냅샷을 기다리는 중입니다';
+    } else {
+      items=(d.latest||[]).map(function(v,i){v.rank=i+1;return v;});
+      document.getElementById('secTitle').textContent=(d.lastCollectedText||'-')+' 수집 기준';
+    }
+
+    var socs=items.map(function(v){return v.soc;}).filter(function(s){return s!==null;});
+    var low=socs.filter(function(s){return s<c.danger;}).length;
+    document.getElementById('cCount').textContent=items.length||'-';
+    document.getElementById('cAvg').textContent=socs.length?Math.round(socs.reduce(function(a,b){return a+b;},0)/socs.length)+'%':'-';
+    document.getElementById('cLow').textContent=socs.length?low:'-';
+    document.getElementById('cLowL').textContent=c.danger+'% 미만';
+    document.getElementById('cLowCard').className='card'+(low?' alert':'');
+    var mn=items.find(function(v){return v.soc!==null;});
+    document.getElementById('cMin').textContent=mn?Math.round(mn.soc)+'%':'-';
+    document.getElementById('cMinL').textContent=mn?'최저 '+mn.name:'최저';
+
+    if(!items.length){ document.getElementById('list').innerHTML='<div class="empty">표시할 데이터가 없습니다</div>'; return; }
+    document.getElementById('list').innerHTML=items.map(function(v){
+      var lag=minsAgo(v.dataTime), lagTxt=(lag!==null&&lag>30)?'통신 '+(lag>120?Math.round(lag/60)+'시간':Math.round(lag)+'분')+' 전':(v.acc==1?'운행중':'정지');
+      var dl='';
+      if(TAB==='snap'&&prevMap[v.name]!==undefined&&v.soc!==null&&prevMap[v.name]!==null){
+        var diff=Math.round(v.soc-prevMap[v.name]);
+        dl=diff<0?'<span class="dl down">▼'+(-diff)+'</span>':diff>0?'<span class="dl up">▲'+diff+'</span>':'<span class="dl">–</span>';
+      } else dl='<span class="dl"></span>';
+      var w=v.soc===null?0:Math.max(2,Math.min(100,v.soc));
+      return '<div class="row '+cls(v.soc,c)+((lag!==null&&lag>30)?' lag':'')+'">'+
+        '<div class="rk">'+esc(v.rank)+'</div>'+
+        '<div class="nm">'+esc(v.name)+'<small>'+esc(lagTxt)+'</small></div>'+
+        '<div class="bar"><i style="width:'+w+'%;background:'+color(v.soc,c)+'"></i></div>'+
+        '<div class="pct">'+(v.soc===null?'-':Math.round(v.soc)+'%')+'</div>'+dl+
+      '</div>';
+    }).join('');
+  }
+</script>
+</body>
+</html>

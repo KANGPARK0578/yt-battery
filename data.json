@@ -1,0 +1,109 @@
+{
+ "lastCollectedAt": "2026-11-24T19:59:03+09:00",
+ "lastCollectedText": "2026-11-24 19:59",
+ "latest": [
+  {
+   "name": "YT620",
+   "soc": 60.0,
+   "acc": 1,
+   "dataTime": "2026-11-24 19:49:55"
+  },
+  {
+   "name": "YT621",
+   "soc": 61.0,
+   "acc": 1,
+   "dataTime": "2026-11-24 19:49:55"
+  },
+  {
+   "name": "YT630",
+   "soc": 63.0,
+   "acc": 0,
+   "dataTime": "2026-11-24 19:37:04"
+  },
+  {
+   "name": "YT617",
+   "soc": 65.0,
+   "acc": 1,
+   "dataTime": "2026-11-24 19:50:01"
+  },
+  {
+   "name": "YT623",
+   "soc": 68.0,
+   "acc": 0,
+   "dataTime": "2026-11-24 16:00:20"
+  },
+  {
+   "name": "YT625",
+   "soc": 75.0,
+   "acc": 1,
+   "dataTime": "2026-11-24 19:50:00"
+  },
+  {
+   "name": "YT611",
+   "soc": 72.0,
+   "acc": 1,
+   "dataTime": "2026-11-24 19:50:00"
+  }
+ ],
+ "snapshot": {
+  "at": "2026-11-24 18:00",
+  "items": [
+   {
+    "rank": 1,
+    "name": "YT620",
+    "soc": 60.0,
+    "acc": 1,
+    "dataTime": "2026-11-24 19:49:55"
+   },
+   {
+    "rank": 2,
+    "name": "YT621",
+    "soc": 61.0,
+    "acc": 1,
+    "dataTime": "2026-11-24 19:49:55"
+   },
+   {
+    "rank": 3,
+    "name": "YT630",
+    "soc": 63.0,
+    "acc": 0,
+    "dataTime": "2026-11-24 19:37:04"
+   },
+   {
+    "rank": 4,
+    "name": "YT617",
+    "soc": 65.0,
+    "acc": 1,
+    "dataTime": "2026-11-24 19:50:01"
+   },
+   {
+    "rank": 5,
+    "name": "YT623",
+    "soc": 68.0,
+    "acc": 0,
+    "dataTime": "2026-11-24 16:00:20"
+   },
+   {
+    "rank": 6,
+    "name": "YT625",
+    "soc": 75.0,
+    "acc": 1,
+    "dataTime": "2026-11-24 19:50:00"
+   },
+   {
+    "rank": 7,
+    "name": "YT611",
+    "soc": 72.0,
+    "acc": 1,
+    "dataTime": "2026-11-24 19:50:00"
+   }
+  ]
+ },
+ "previous": null,
+ "cfg": {
+  "warn": 50,
+  "danger": 30,
+  "staleMin": 25,
+  "snapshotHours": 2
+ }
+}
