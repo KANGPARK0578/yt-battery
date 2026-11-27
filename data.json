@@ -1,6 +1,6 @@
 {
- "lastCollectedAt": "2026-11-28T06:00:05+09:00",
- "lastCollectedText": "2026-11-28 06:00",
+ "lastCollectedAt": "2026-11-28T06:10:05+09:00",
+ "lastCollectedText": "2026-11-28 06:10",
  "latest": [
   {
    "name": "YT625",
@@ -126,13 +126,13 @@
    "name": "YT629",
    "soc": 100.0,
    "acc": 0,
-   "dataTime": "2026-11-28 05:59:52"
+   "dataTime": "2026-11-28 06:09:53"
   },
   {
    "name": "YT612",
    "soc": 100.0,
    "acc": 0,
-   "dataTime": "2026-11-28 05:59:46"
+   "dataTime": "2026-11-28 06:09:46"
   }
  ],
  "snapshot": {
