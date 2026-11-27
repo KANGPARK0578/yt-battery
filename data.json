@@ -1,6 +1,6 @@
 {
- "lastCollectedAt": "2026-11-28T06:30:05+09:00",
- "lastCollectedText": "2026-11-28 06:30",
+ "lastCollectedAt": "2026-11-28T06:40:06+09:00",
+ "lastCollectedText": "2026-11-28 06:40",
  "latest": [
   {
    "name": "YT625",
@@ -10,9 +10,9 @@
   },
   {
    "name": "YT619",
-   "soc": 62.0,
-   "acc": 0,
-   "dataTime": "2026-11-28 01:43:15"
+   "soc": 63.0,
+   "acc": 1,
+   "dataTime": "2026-11-28 06:39:33"
   },
   {
    "name": "YT630",
@@ -125,14 +125,14 @@
   {
    "name": "YT629",
    "soc": 100.0,
-   "acc": 0,
-   "dataTime": "2026-11-28 06:29:53"
+   "acc": 1,
+   "dataTime": "2026-11-28 06:39:53"
   },
   {
    "name": "YT612",
    "soc": 100.0,
    "acc": 0,
-   "dataTime": "2026-11-28 06:29:46"
+   "dataTime": "2026-11-28 06:39:46"
   }
  ],
  "snapshot": {
